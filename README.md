@@ -81,7 +81,7 @@ We will add values as shown (the password is `admin123`) and click <kbd>Next: Ac
 
 ![Couchbase Server 3](images/Couchbase_Server_3.png)
 
-We will accept the terms and conditions as shown and click <kbd>Configure Disk, Mmemory, Services</kbd>.
+We will accept the terms and conditions as shown and click <kbd>Configure Disk, Memory, Services</kbd>.
 
 ![Couchbase Server 4](images/Couchbase_Server_4.png)
 
@@ -111,7 +111,7 @@ And now we can query our database:
 
 ![Couchbase Query](images/Couchbase_Query.png)
 
-[Unusally, __Ctrl-C__ will not stop our Cochbase server. We will need to kill it from a new terminal.]
+[Unusually, __Ctrl-C__ / __Ctrl-D__ will not stop our Couchbase server. We will need to kill it from a new terminal.]
 
 ## To Run
 
