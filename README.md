@@ -4,9 +4,7 @@ An experiment with using [Couchbase](http://docs.couchbase.com/home/) as
 a drop-in replacement for PostgreSQL.
 
 This builds on my [RESTful-Recipes](https://github.com/mramshaw/RESTful-Recipes) repo,
-which stores data in [PostgreSQL](https://www.postgresql.org/). As Couchbase uses both
-the PostgreSQL wire protocal and the Golang driver - while RESTFul-Recipes has acceptance
-tests - this is an effort to see how easy it is to use Couchbase instead of PostgreSQL.
+which stores data in [PostgreSQL](https://www.postgresql.org/).
 
 All dependencies are handled via [Docker](https://www.docker.com/products/docker) and __docker-compose__.
 
@@ -27,10 +25,27 @@ All testing can be done with [curl](CURLs.txt).
 
 ## Couchbase
 
-What would be referred to as a __row__ in a relational database (i.e. a collection of
-related data items) is referred to as a __document__ in Couchbase.
+Couchbase is a document-oriented database based on the JSON document model.
 
-Similiar to __redis__, documents may be assigned arbitrary expiry dates.
+What would be referred to as a __table__ or __row__ in a relational database
+is referred to as a __document__ in Couchbase. Like other NoSQL databases,
+documents may have embedded elements. In this regard, Couchbase documents are
+more akin to object storage than relational database rows or records.
+
+What would be referred to as a __database__ in a relational database seems
+to be referred to as a __bucket__ in Couchbase.
+
+As with other NoSQL databases (such as DynamoDB), schemas are flexible.
+
+Unusually, features master-master replication (all nodes are identical).
+
+N1QL (the SQL-like Couchbase query language) operates on JSON documents,
+returning JSON documents.
+
+Similiar to __redis__ and __Cassandra__, data may be assigned arbitrary
+expiry times.
+
+Couchbase is packaged with an Admin Console GUI.
 
 
 ## Getting familiar with Couchbase
@@ -65,7 +80,9 @@ and logs available in /opt/couchbase/var/lib/couchbase/logs
 <...>
 ```
 
-This makes the Couchbase server available at:
+[This may take some time, depending upon download speed.]
+
+This makes the Admin UI for our Couchbase server available at:
 
     http://localhost:8091
 
@@ -107,9 +124,14 @@ And the following screen will be displayed:
 
 We will add values as shown (the password is `test123`) and click <kbd>Add User</kbd>.
 
-And now we can query our database:
+And now we can query our database
+<kbd>SELECT name FROM `beer-sample` WHERE brewery_id ="mishawaka_brewing";</kbd>:
 
 ![Couchbase Query](images/Couchbase_Query.png)
+
+Note that the bucket is surrounded by backticks ("`") and the result set is provided as [JSON](http://en.wikipedia.org/wiki/JSON).
+
+However, we can also display our result set as a __Table__ or a __Tree__. We can also ___export___ our results as JSON.
 
 [Unusually, __Ctrl-C__ / __Ctrl-D__ will not stop our Couchbase server. We will need to kill it from a new terminal.]
 
@@ -199,4 +221,4 @@ The command to run:
 
 ## To Do
 
-- [ ] Learn N1QL
+- [x] Learn [N1QL](http://docs.couchbase.com/server/6.0/getting-started/try-a-query.html)
