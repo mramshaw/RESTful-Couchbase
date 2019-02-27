@@ -57,7 +57,7 @@ Couchbase has a nice introduction:
 We will start off with the __Community Edition__ (6.0.0 as of the time of writing):
 
 ```bash
-$ docker run --name db -p 8091-8094:8091-8094 -p 11210:11210 couchbase:community-6.0.0
+$ docker run --name db -p 8091-8094:8091-8094 -p 11210:11210 --rm couchbase:community-6.0.0
 Unable to find image 'couchbase:community-6.0.0' locally
 community-6.0.0: Pulling from library/couchbase
 7b722c1070cd: Pull complete 
@@ -129,7 +129,7 @@ And now we can query our database
 
 ![Couchbase Query](images/Couchbase_Query.png)
 
-Note that the bucket is surrounded by backticks ("`") and the result set is provided as [JSON](http://en.wikipedia.org/wiki/JSON).
+Note that the bucket is surrounded by backticks (`) and the result set is provided as [JSON](http://en.wikipedia.org/wiki/JSON).
 
 However, we can also display our result set as a __Table__ or a __Tree__. We can also ___export___ our results as JSON.
 
@@ -141,7 +141,7 @@ The command to run:
 
     $ docker-compose up -d
 
-For the first run, there will be a warning as `mramshaw4docs/golang-alpine-couchbase:1.8` must be built.
+For the first run, there will be a warning as `mramshaw4docs/golang-couchbase:1.11` must be built.
 
 This image will contain all of the Go dependencies and should only need to be built once.
 
@@ -222,3 +222,5 @@ The command to run:
 ## To Do
 
 - [x] Learn [N1QL](http://docs.couchbase.com/server/6.0/getting-started/try-a-query.html)
+- [ ] Update build process to `vgo`
+- [ ] Add tests for data TTL
