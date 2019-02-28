@@ -1,0 +1,33 @@
+General GET:
+
+	curl -v localhost/v1/recipes
+
+GET:
+
+	curl -v localhost/v1/recipes/1
+
+POST (Create):
+
+	curl -v -H "Content-Type: application/json" -d '{"name":"test recipe","preptime":1.11,"difficulty":1,"vegetarian":false}' localhost/v1/recipes
+
+PUT (Update):
+
+	curl -v -X PUT -H "Content-Type: application/json" -d '{"name":"test recipe updated","preptime":1.3,"difficulty":2,"vegetarian":true}' localhost/v1/recipes/1
+
+PATCH (Update):
+
+	curl -v -X PATCH -H "Content-Type: application/json" -d '{"name":"test recipe updated","preptime":1.5,"difficulty":3,"vegetarian":false}' localhost/v1/recipes/1
+
+DELETE:
+
+	curl -v -X DELETE -H "Content-Type: application/json" localhost/v1/recipes/1
+
+RATE:
+
+	curl -v -H "Content-Type: application/json" -d '{"rating":3}' localhost/v1/recipes/1/rating
+
+SEARCH:
+
+    curl -v -F count=5 -F start=1 -F preptime=0.5 localhost/v1/recipes/search
+
+    curl -v -F preptime=0.5 localhost/v1/recipes/search

@@ -1,0 +1,49 @@
+version: '2'
+
+networks:
+  couchnet:
+
+services:
+
+    golang:
+        build: .
+        image: mramshaw4docs/golang-couchbase:1.11
+        networks:
+          couchnet:
+        depends_on:
+            - couchbase
+        ports:
+            - "80:8100"
+        volumes:
+            - ./src/application:/go/src/application
+            - ./src/recipes:/go/src/recipes
+            - ./src/test:/go/src/test
+            - ./src:/go/src/RestfulCouchbase
+        working_dir: /go/src/RestfulCouchbase
+        command: make
+        #command: ./restful_couchbase
+        links:
+            - couchbase
+        environment:
+            PORT: '8100'
+            COUCHBASE_USER: halcouch
+            COUCHBASE_PASS: couchpass
+            COUCHBASE_DB: recipes
+
+    couchbase:
+        image: couchbase:community-6.0.0
+        networks:
+          couchnet:
+            aliases:
+              - couchbase-backend
+        restart: unless-stopped
+        ports: 
+            - 8091-8094:8091-8094
+            - 11210:11210
+        volumes:
+            - ./scripts/couchbase-setup.sh:/opt/couchbase/couchbase-setup.sh
+        environment:
+            COUCHBASE_USER: halcouch
+            COUCHBASE_DB: recipes
+        entrypoint: "/bin/bash"
+        command: ["/opt/couchbase/couchbase-setup.sh"]

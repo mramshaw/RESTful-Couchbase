@@ -16,6 +16,8 @@ Enforces industry-standard __gofmt__ code formatting.
 
 All testing can be done with [curl](CURLs.txt).
 
+We will use parameterized N1QL to prevent SQL injection.
+
 
 ## Features
 
@@ -185,7 +187,7 @@ This should make the web service available at:
 
     http://localhost/v1/recipes
 
-Once the service is running, it is possible to `curl` it. Check `CURLs.txt` for examples.
+Once the service is running, it is possible to `curl` it. Check [CURLs.txt](CURLs.txt) for examples.
 
 
 ## See what's running:
