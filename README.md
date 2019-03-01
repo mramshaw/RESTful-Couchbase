@@ -210,12 +210,20 @@ The command to run:
 
     $ docker-compose down
 
+Clean up docker volumes as follows:
+
+	$ docker volume prune
+
 
 ## Clean Up
 
 The command to run:
 
     $ docker-compose run golang make clean
+
+Clean up docker image as follows:
+
+	$ docker rmi mramshaw4docs/golang-couchbase:1.11
 
 
 ## Results
