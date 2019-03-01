@@ -11,7 +11,9 @@ The contents are as follows:
 * [Features](#features)
 * [Couchbase](#couchbase)
     * [Getting familiar with Couchbase](#getting-familiar-with-couchbase)
-    * [Performance Tips](#performance-tips)
+* [Couchbase Performance Tips](#couchbase-performance-tips)
+    * [Query by KEYS rather than by id](#query-by-keys-rather-than-by-id)
+    * [Specify adhoc(false) to cache queries](#specify-adhocfalse-to-cache-queries)
 * [Operations](#operations)
     * [To Run](#to-run)
     * [To Build](#to-build)
@@ -22,6 +24,7 @@ The contents are as follows:
     * [Clean up](#clean-up)
     * [Results](#results)
 * [Versions](#versions)
+* [Reference](#reference)
 * [To Do](#to-do)
 
 ## Rationale
@@ -157,7 +160,12 @@ However, we can also display our result set as a __Table__ or a __Tree__. We can
 
 [Unusually, __Ctrl-C__ / __Ctrl-D__ will not stop our Couchbase server. We will need to kill it from a new terminal.]
 
-#### Performance Tips
+## Performance Tips
+
+1. [Query by KEYS rather than by id](#query-by-keys-rather-than-by-id)
+2. [Specify adhoc(false) to cache queries](#specify-adhocfalse-to-cache-queries)
+
+#### Query by KEYS rather than by id
 
 Whenever possible, use the KEYS option (this doesn't even require an index) for document retrieval:
 
@@ -166,6 +174,16 @@ Whenever possible, use the KEYS option (this doesn't even require an index) for 
 Here we can see that using the document id is slower:
 
 ![Couchbase Query using id](images/SELECT_using_id.png)
+
+#### Specify adhoc(false) to cache queries
+
+Specify that the server should cache the query plan in an internal cache as follows:
+
+```Go
+	listRecipesQuery := gocb.NewN1qlQuery("SELECT * FROM recipes LIMIT $1 OFFSET $2").AdHoc(false)
+```
+
+[Note that there is currently a limit of about 5,000 query plans that may be stored.]
 
 ## Operations
 
@@ -255,12 +273,26 @@ Clean up docker image as follows:
 
 #### Results
 
+Due to the ad-hoc nature of NoSQL documents, the code is somewhat more complicated
+than would be the case with relational databases; however as I am using Couchbase
+as a drop-in replacement for PostgreSQL this is hardly a fair comparison.
+
+But for learning the ins and outs of Couchbase, it's been a worthwhile exercise.
+
 ## Versions
 
 * Couchbase - Community Edition - version __6.0.0__
-* Docker - Community edition (Client & Server) version __18.09.3__
+* Docker - Community edition (Client & Server) version - __18.09.3__
 * Docker-Compose __1.23.1__
 * Go __1.11__
+
+More recent versions of these components should be fine.
+
+## Reference
+
+Query Optimization Using Prepared (Optimized) Statements:
+
+    http://docs.couchbase.com/go-sdk/1.5/n1ql-query.html#prepare-stmts
 
 ## To Do
 
