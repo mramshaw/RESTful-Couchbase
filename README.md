@@ -3,6 +3,29 @@
 An experiment with using [Couchbase](http://docs.couchbase.com/home/) as
 a drop-in replacement for PostgreSQL.
 
+## Contents
+
+The contents are as follows:
+
+* [Rationale](#rationale)
+* [Features](#features)
+* [Couchbase](#couchbase)
+    * [Getting familiar with Couchbase](#getting-familiar-with-couchbase)
+    * [Performance Tips](#performance-tips)
+* [Operations](#operations)
+    * [To Run](#to-run)
+    * [To Build](#to-build)
+    * [For testing](#for-testing)
+    * [See what's running](#see-whats-running)
+    * [View the build and/or execution logs](#view-the-build-andor-execution-logs)
+    * [To Shutdown](#to-shutdown)
+    * [Clean up](#clean-up)
+    * [Results](#results)
+* [Versions](#versions)
+* [To Do](#to-do)
+
+## Rationale
+
 This builds on my [RESTful-Recipes](https://github.com/mramshaw/RESTful-Recipes) repo,
 which stores data in [PostgreSQL](https://www.postgresql.org/).
 
@@ -18,12 +41,10 @@ All testing can be done with [curl](CURLs.txt).
 
 We will use parameterized N1QL to prevent SQL injection.
 
-
 ## Features
 
 - uses [Gorilla MUX](http://github.com/Gorilla/mux)
 - uses [Pure Go couchbase driver](http://blog.couchbase.com/go-sdk-1.0-ga/)
-
 
 ## Couchbase
 
@@ -49,8 +70,7 @@ expiry times.
 
 Couchbase is packaged with an Admin Console GUI.
 
-
-## Getting familiar with Couchbase
+#### Getting familiar with Couchbase
 
 Couchbase has a nice introduction:
 
@@ -137,7 +157,21 @@ However, we can also display our result set as a __Table__ or a __Tree__. We can
 
 [Unusually, __Ctrl-C__ / __Ctrl-D__ will not stop our Couchbase server. We will need to kill it from a new terminal.]
 
-## To Run
+#### Performance Tips
+
+Whenever possible, use the KEYS option (this doesn't even require an index) for document retrieval:
+
+![Couchbase Query using KEYS](images/SELECT_using_KEYS.png)
+
+Here we can see that using the document id is slower:
+
+![Couchbase Query using id](images/SELECT_using_id.png)
+
+## Operations
+
+We will use __Docker__ and __docker-compose__ to build and test our application.
+
+#### To Run
 
 The command to run:
 
@@ -155,8 +189,7 @@ A successful `golang` startup should show the following as the last line of `doc
 
 In this line does not appear, repeat the `docker-compose up -d` command (there is no penalty for this).
 
-
-## To Build:
+#### To Build:
 
 The command to run:
 
@@ -168,8 +201,7 @@ Once `make` indicates that `restful_couchbase` has been built, can change `docke
 
 2) Uncomment `command: ./restful_couchbase`
 
-
-## For testing:
+#### For testing:
 
 [Optional] Start couchbase:
 
@@ -189,22 +221,19 @@ This should make the web service available at:
 
 Once the service is running, it is possible to `curl` it. Check [CURLs.txt](CURLs.txt) for examples.
 
-
-## See what's running:
+#### See what's running:
 
 The command to run:
 
     $ docker ps
 
-
-## View the build and/or execution logs
+#### View the build and/or execution logs
 
 The command to run:
 
     $ docker-compose logs golang
 
-
-## To Shutdown:
+#### To Shutdown:
 
 The command to run:
 
@@ -214,8 +243,7 @@ Clean up docker volumes as follows:
 
 	$ docker volume prune
 
-
-## Clean Up
+#### Clean Up
 
 The command to run:
 
@@ -225,9 +253,14 @@ Clean up docker image as follows:
 
 	$ docker rmi mramshaw4docs/golang-couchbase:1.11
 
+#### Results
 
-## Results
+## Versions
 
+* Couchbase - Community Edition - version __6.0.0__
+* Docker - Community edition (Client & Server) version __18.09.3__
+* Docker-Compose __1.23.1__
+* Go __1.11__
 
 ## To Do
 
