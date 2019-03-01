@@ -160,9 +160,10 @@ However, we can also display our result set as a __Table__ or a __Tree__. We can
 
 [Unusually, __Ctrl-C__ / __Ctrl-D__ will not stop our Couchbase server. We will need to kill it from a new terminal.]
 
-## Performance Tips
+## Couchbase Performance Tips
 
 1. [Query by KEYS rather than by id](#query-by-keys-rather-than-by-id)
+
 2. [Specify adhoc(false) to cache queries](#specify-adhocfalse-to-cache-queries)
 
 #### Query by KEYS rather than by id
@@ -203,9 +204,9 @@ For the very first run, `golang` may fail as it takes `couchbase` some time to r
 
 A successful `golang` startup should show the following as the last line of `docker-compose logs golang`:
 
-    golang_1    | 2018/02/24 18:38:01 Now serving recipes ...
+    golang_1    | 2019/03/01 19:05:05 Now serving recipes ...
 
-In this line does not appear, repeat the `docker-compose up -d` command (there is no penalty for this).
+If this line does not appear, repeat the `docker-compose up -d` command (there is no penalty for this).
 
 #### To Build:
 
@@ -231,7 +232,7 @@ Start golang [if couchbase is not running, this step will start it]:
 
 Successful startup will be indicated as follows:
 
-    2018/02/24 16:27:10 Now serving recipes ...
+    2019/03/01 19:05:05 Now serving recipes ...
 
 This should make the web service available at:
 
