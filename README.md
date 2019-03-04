@@ -298,5 +298,6 @@ Query Optimization Using Prepared (Optimized) Statements:
 ## To Do
 
 - [x] Learn [N1QL](http://docs.couchbase.com/server/6.0/getting-started/try-a-query.html)
+- [ ] Investigate using views to enforce constraints (indexes are a performance nightmare)
 - [ ] Update build process to `vgo`
 - [ ] Add tests for data TTL
