@@ -13,7 +13,7 @@ The contents are as follows:
     * [Getting familiar with Couchbase](#getting-familiar-with-couchbase)
 * [Couchbase Performance Tips](#couchbase-performance-tips)
     * [Query by KEYS rather than by id](#query-by-keys-rather-than-by-id)
-    * [Specify adhoc(false) to cache queries](#specify-adhocfalse-to-cache-queries)
+    * [Specify "AdHoc(false)" to cache queries](#specify-adhocfalse-to-cache-queries)
 * [Operations](#operations)
     * [To Run](#to-run)
     * [To Build](#to-build)
@@ -164,7 +164,7 @@ However, we can also display our result set as a __Table__ or a __Tree__. We can
 
 1. [Query by KEYS rather than by id](#query-by-keys-rather-than-by-id)
 
-2. [Specify adhoc(false) to cache queries](#specify-adhocfalse-to-cache-queries)
+2. [Specify "AdHoc(false)" to cache queries](#specify-adhocfalse-to-cache-queries)
 
 #### Query by KEYS rather than by id
 
@@ -176,7 +176,7 @@ Here we can see that using the document id is slower:
 
 ![Couchbase Query using id](images/SELECT_using_id.png)
 
-#### Specify adhoc(false) to cache queries
+#### Specify "AdHoc(false)" to cache queries
 
 Specify that the server should cache the query plan in an internal cache as follows:
 
