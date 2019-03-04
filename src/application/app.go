@@ -22,13 +22,9 @@ type App struct {
 
 func (a *App) getRecipeEndpoint(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
-	id, err := strconv.Atoi(params["id"])
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid recipe ID")
-		return
-	}
-	r := recipes.Recipe{ID: id}
-	if err := r.GetRecipe(a.DB); err != nil {
+	recipeID := params["id"]
+	r := recipes.Recipe{}
+	if err := r.GetRecipe(recipeID, a.DB); err != nil {
 		if gocb.IsKeyNotFoundError(err) {
 			respondWithError(w, http.StatusNotFound, "Recipe not found")
 		} else {
@@ -74,11 +70,7 @@ func (a *App) createRecipeEndpoint(w http.ResponseWriter, req *http.Request) {
 
 func (a *App) modifyRecipeEndpoint(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
-	id, err := strconv.Atoi(params["id"])
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid recipe ID")
-		return
-	}
+	recipeID := params["id"]
 	var r recipes.Recipe
 	decoder := json.NewDecoder(req.Body)
 	if err := decoder.Decode(&r); err != nil {
@@ -86,8 +78,7 @@ func (a *App) modifyRecipeEndpoint(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	defer req.Body.Close()
-	r.ID = id
-	if err := r.UpdateRecipe(a.DB); err != nil {
+	if err := r.UpdateRecipe(recipeID, a.DB); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -96,13 +87,9 @@ func (a *App) modifyRecipeEndpoint(w http.ResponseWriter, req *http.Request) {
 
 func (a *App) deleteRecipeEndpoint(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
-	id, err := strconv.Atoi(params["id"])
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid recipe ID")
-		return
-	}
-	r := recipes.Recipe{ID: id}
-	if err := r.DeleteRecipe(a.DB); err != nil {
+	recipeID := params["id"]
+	r := recipes.Recipe{}
+	if err := r.DeleteRecipe(recipeID, a.DB); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
