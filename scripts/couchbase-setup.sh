@@ -16,7 +16,7 @@ sleep 10
 /opt/couchbase/bin/couchbase-cli cluster-init -c localhost --cluster-username halcouch --cluster-password couchpass --services data,index,query
 
 # Create bucket, minimal settings for testing
-/opt/couchbase/bin/couchbase-cli bucket-create -c localhost --username halcouch --password couchpass --bucket recipes --bucket-type couchbase --bucket-ramsize 100
+/opt/couchbase/bin/couchbase-cli bucket-create -c localhost --username halcouch --password couchpass --bucket recipes --bucket-type couchbase --bucket-ramsize 100 --enable-flush=1
 
 # Return to the couchbase server
 fg 1

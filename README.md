@@ -1,5 +1,10 @@
 # RESTful Couchbase
 
+[![Build status](http://travis-ci.org/mramshaw/RESTful-Couchbase.svg?branch=master)](http://travis-ci.org/mramshaw/RESTful-Couchbase)
+[![Coverage Status](http://codecov.io/github/mramshaw/RESTful-Couchbase/coverage.svg?branch=master)](http://codecov.io/github/mramshaw/RESTful-Couchbase?branch=master)
+[![Go Report Card](http://goreportcard.com/badge/github.com/mramshaw/RESTful-Couchbase?style=flat-square)](http://goreportcard.com/report/github.com/mramshaw/RESTful-Couchbase)
+[![GitHub release](http://img.shields.io/github/release/mramshaw/RESTful-Couchbase.svg?style=flat-square)](http://github.com/mramshaw/RESTful-Couchbase/releases)
+
 An experiment with using [Couchbase](http://docs.couchbase.com/home/) as
 a drop-in replacement for PostgreSQL.
 
@@ -299,5 +304,6 @@ Query Optimization Using Prepared (Optimized) Statements:
 
 - [x] Learn [N1QL](http://docs.couchbase.com/server/6.0/getting-started/try-a-query.html)
 - [ ] Investigate using views to enforce constraints (indexes are a performance nightmare)
+- [ ] Add Travis CI build process & code coverage reporting
 - [ ] Update build process to `vgo`
 - [ ] Add tests for data TTL
