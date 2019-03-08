@@ -191,6 +191,10 @@ Specify that the server should cache the query plan in an internal cache as foll
 
 [Note that there is currently a limit of about 5,000 query plans that may be stored.]
 
+The admin console tracks prepared statement performance, as follows:
+
+![Couchbase Prepared Statements](images/Couchbase_Prepared_Statements.png)
+
 ## Operations
 
 We will use __Docker__ and __docker-compose__ to build and test our application.
