@@ -30,7 +30,8 @@ vet:		lint
 		GOPATH=$(GOPATH) GOOS=$(GOOS) GOARCH=$(GOARCH) go tool vet test/*.go
 
 test:		vet
-		GOPATH=$(GOPATH) GOOS=$(GOOS) GOARCH=$(GOARCH) go test -v test
+		GOPATH=$(GOPATH) GOOS=$(GOOS) GOARCH=$(GOARCH) go test -coverpkg .,application,recipes -coverprofile=coverage.txt -covermode=atomic -v . ./...
+		GOPATH=$(GOPATH) GOOS=$(GOOS) GOARCH=$(GOARCH) go tool cover -html=coverage.txt -o coverage.html
 
 build:		test
 		GOPATH=$(GOPATH) GOOS=$(GOOS) GOARCH=$(GOARCH) go build -v -o $(MAIN) main.go

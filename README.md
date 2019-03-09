@@ -353,7 +353,7 @@ But for learning the ins and outs of Couchbase, it's been a worthwhile exercise.
 ## Versions
 
 * Couchbase - Community Edition - version __6.0.0__
-* Docker - Community edition (Client & Server) version - __18.09.3__
+* Docker - Community edition (Client & Server) - version __18.09.3__
 * Docker-Compose __1.23.1__
 * Go __1.11__
 
@@ -369,6 +369,6 @@ Query Optimization Using Prepared (Optimized) Statements:
 
 - [x] Learn [N1QL](http://docs.couchbase.com/server/6.0/getting-started/try-a-query.html)
 - [ ] Investigate using views to enforce constraints (indexes are a performance nightmare)
-- [ ] Add Travis CI build process & code coverage reporting
+- [x] Add Travis CI build process & code coverage reporting
 - [ ] Update build process to `vgo`
 - [ ] Add tests for data TTL
