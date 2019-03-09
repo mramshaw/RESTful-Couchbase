@@ -19,9 +19,10 @@ The contents are as follows:
 * [Couchbase Performance Tips](#couchbase-performance-tips)
     * [Query by KEYS rather than by id](#query-by-keys-rather-than-by-id)
     * [Specify "AdHoc(false)" to cache queries](#specify-adhocfalse-to-cache-queries)
+    * [Track prepared statement performance](#track-prepared-statement-performance)
 * [Operations](#operations)
-    * [To Run](#to-run)
     * [To Build](#to-build)
+    * [To Run](#to-run)
     * [For testing](#for-testing)
     * [See what's running](#see-whats-running)
     * [View the build and/or execution logs](#view-the-build-andor-execution-logs)
@@ -171,6 +172,8 @@ However, we can also display our result set as a __Table__ or a __Tree__. We can
 
 2. [Specify "AdHoc(false)" to cache queries](#specify-adhocfalse-to-cache-queries)
 
+3. [Track prepared statement performance](#track-prepared-statement-performance)
+
 #### Query by KEYS rather than by id
 
 Whenever possible, use the KEYS option (this doesn't even require an index) for document retrieval:
@@ -191,13 +194,85 @@ Specify that the server should cache the query plan in an internal cache as foll
 
 [Note that there is currently a limit of about 5,000 query plans that may be stored.]
 
+#### Track prepared statement performance
+
 The admin console tracks prepared statement performance, as follows:
 
 ![Couchbase Prepared Statements](images/Couchbase_Prepared_Statements.png)
 
+Poorly-performing statements may need to be revised - or may benefit from new indexes.
+
 ## Operations
 
 We will use __Docker__ and __docker-compose__ to build and test our application.
+
+#### To Build:
+
+The command to run:
+
+    $ docker-compose up
+
+This should look as follows:
+
+```bash
+$ docker-compose up
+Creating network "restfulcouchbase_couchnet" with the default driver
+Creating restfulcouchbase_couchbase_1_d6da7719d982 ... done
+Creating restfulcouchbase_golang_1_cb1241403038    ... done
+Attaching to restfulcouchbase_couchbase_1_84f81eb2a871, restfulcouchbase_golang_1_6b5fa034bf5a
+couchbase_1_84f81eb2a871 | + set -m
+couchbase_1_84f81eb2a871 | + sleep 10
+couchbase_1_84f81eb2a871 | + /entrypoint.sh couchbase-server
+couchbase_1_84f81eb2a871 | Starting Couchbase Server -- Web UI available at http://<ip>:8091
+couchbase_1_84f81eb2a871 | and logs available in /opt/couchbase/var/lib/couchbase/logs
+couchbase_1_84f81eb2a871 | + /opt/couchbase/bin/couchbase-cli cluster-init -c localhost --cluster-username halcouch --cluster-password couchpass --services data,index,query
+couchbase_1_84f81eb2a871 | SUCCESS: Cluster initialized
+couchbase_1_84f81eb2a871 | + /opt/couchbase/bin/couchbase-cli bucket-create -c localhost --username halcouch --password couchpass --bucket recipes --bucket-type couchbase --bucket-ramsize 100 --enable-flush=1
+couchbase_1_84f81eb2a871 | SUCCESS: Bucket created
+couchbase_1_84f81eb2a871 | + fg 1
+couchbase_1_84f81eb2a871 | /entrypoint.sh couchbase-server
+golang_1_6b5fa034bf5a | GOPATH=/go GOOS=linux GOARCH=amd64 gofmt -d -e -s -w *.go
+golang_1_6b5fa034bf5a | GOPATH=/go GOOS=linux GOARCH=amd64 gofmt -d -e -s -w application/*.go
+golang_1_6b5fa034bf5a | GOPATH=/go GOOS=linux GOARCH=amd64 gofmt -d -e -s -w recipes/*.go
+golang_1_6b5fa034bf5a | GOPATH=/go GOOS=linux GOARCH=amd64 gofmt -d -e -s -w test/*.go
+golang_1_6b5fa034bf5a | GOPATH=/go GOOS=linux GOARCH=amd64 golint -set_exit_status *.go
+golang_1_6b5fa034bf5a | GOPATH=/go GOOS=linux GOARCH=amd64 golint -set_exit_status ./...
+golang_1_6b5fa034bf5a | GOPATH=/go GOOS=linux GOARCH=amd64 go tool vet *.go
+golang_1_6b5fa034bf5a | GOPATH=/go GOOS=linux GOARCH=amd64 go tool vet application/*.go
+golang_1_6b5fa034bf5a | GOPATH=/go GOOS=linux GOARCH=amd64 go tool vet recipes/*.go
+golang_1_6b5fa034bf5a | GOPATH=/go GOOS=linux GOARCH=amd64 go tool vet test/*.go
+golang_1_6b5fa034bf5a | GOPATH=/go GOOS=linux GOARCH=amd64 go test -v test
+golang_1_6b5fa034bf5a | === RUN   TestEmptyTables
+golang_1_6b5fa034bf5a | --- PASS: TestEmptyTables (0.55s)
+golang_1_6b5fa034bf5a | === RUN   TestGetNonExistentRecipe
+golang_1_6b5fa034bf5a | --- PASS: TestGetNonExistentRecipe (0.41s)
+golang_1_6b5fa034bf5a | === RUN   TestCreateRecipe
+golang_1_6b5fa034bf5a | --- PASS: TestCreateRecipe (0.41s)
+golang_1_6b5fa034bf5a | === RUN   TestGetRecipe
+golang_1_6b5fa034bf5a | --- PASS: TestGetRecipe (0.39s)
+golang_1_6b5fa034bf5a | === RUN   TestUpdatePutRecipe
+golang_1_6b5fa034bf5a | --- PASS: TestUpdatePutRecipe (0.37s)
+golang_1_6b5fa034bf5a | === RUN   TestUpdatePatchRecipe
+golang_1_6b5fa034bf5a | --- PASS: TestUpdatePatchRecipe (0.34s)
+golang_1_6b5fa034bf5a | === RUN   TestDeleteRecipe
+golang_1_6b5fa034bf5a | --- PASS: TestDeleteRecipe (0.37s)
+golang_1_6b5fa034bf5a | === RUN   TestAddRating
+golang_1_6b5fa034bf5a | --- PASS: TestAddRating (0.39s)
+golang_1_6b5fa034bf5a | === RUN   TestSearch
+golang_1_6b5fa034bf5a | --- PASS: TestSearch (4.43s)
+golang_1_6b5fa034bf5a | PASS
+golang_1_6b5fa034bf5a | ok  	test	9.691s
+golang_1_6b5fa034bf5a | GOPATH=/go GOOS=linux GOARCH=amd64 go build -v -o restful_couchbase main.go
+golang_1_6b5fa034bf5a | restful_couchbase has been compiled
+golang_1_6b5fa034bf5a | ./restful_couchbase
+golang_1_6b5fa034bf5a | 2019/03/08 19:45:44 Now serving recipes ...
+```
+
+Once `make` indicates that `restful_couchbase` has been compiled, can change `docker-compose.yml` as follows:
+
+1) Comment `command: bash -c "sleep 15; make"`
+
+2) Uncomment `#command: bash -c "sleep 15; ./restful_couchbase`
 
 #### To Run
 
@@ -205,29 +280,15 @@ The command to run:
 
     $ docker-compose up -d
 
-For the first run, there will be a warning as `mramshaw4docs/golang-couchbase:1.11` must be built.
+For the first run, there will be a warning if `mramshaw4docs/golang-couchbase:1.11` has not been built.
 
 This image will contain all of the Go dependencies and should only need to be built once.
-
-For the very first run, `golang` may fail as it takes `couchbase` some time to ramp up.
 
 A successful `golang` startup should show the following as the last line of `docker-compose logs golang`:
 
     golang_1    | 2019/03/01 19:05:05 Now serving recipes ...
 
 If this line does not appear, repeat the `docker-compose up -d` command (there is no penalty for this).
-
-#### To Build:
-
-The command to run:
-
-    $ docker-compose up -d
-
-Once `make` indicates that `restful_couchbase` has been built, can change `docker-compose.yml` as follows:
-
-1) Comment `command: make`
-
-2) Uncomment `command: ./restful_couchbase`
 
 #### For testing:
 
