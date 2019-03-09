@@ -2,7 +2,7 @@ services:
   - docker
 
 script:
-  - docker-compose up couchbase -d
+  - docker-compose up -d couchbase
   - docker-compose run --publish 80:8100 golang make test
   - docker-compose down
 
