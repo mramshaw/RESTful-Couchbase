@@ -295,8 +295,8 @@ func TestSearch(t *testing.T) {
 	response = executeRequest(req)
 	checkResponseCode(t, http.StatusCreated, response)
 
-	// Sleep for 4 seconds to allow Couchbase time to commit
-	time.Sleep(4 * time.Second)
+	// Sleep for 5 seconds to allow Couchbase time to commit
+	time.Sleep(5 * time.Second)
 
 	var bb bytes.Buffer
 	mw := multipart.NewWriter(&bb)
@@ -348,8 +348,8 @@ func TestSearch(t *testing.T) {
 
 	addRecipes(2, 12)
 
-	// Sleep for 4 seconds to allow Couchbase time to commit
-	time.Sleep(4 * time.Second)
+	// Sleep for 5 seconds to allow Couchbase time to commit
+	time.Sleep(5 * time.Second)
 
 	mw = multipart.NewWriter(&bb)
 	mw.WriteField("count", "10")
