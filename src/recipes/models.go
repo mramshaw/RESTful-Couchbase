@@ -53,11 +53,23 @@ func (r *Recipe) GetRecipe(id string, db *gocb.Bucket) error {
 }
 
 // UpdateRecipe is used to modify a specific recipe.
+// The recipe ID and the recipe ratings will not be changed.
 func (r *Recipe) UpdateRecipe(id string, db *gocb.Bucket) error {
-	_, err := db.Upsert(id, r, 0)
+
+	updateRecipeQuery := gocb.NewN1qlQuery("UPDATE recipes USE KEYS $1 SET name = $2, preptime = $3, difficulty = $4, vegetarian = $5").AdHoc(false)
+
+	var params []interface{}
+	params = append(params, id)
+	params = append(params, r.Name)
+	params = append(params, r.PrepTime)
+	params = append(params, r.Difficulty)
+	params = append(params, r.Vegetarian)
+
+	_, err := db.ExecuteN1qlQuery(updateRecipeQuery, params)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 

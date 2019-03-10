@@ -291,7 +291,6 @@ func clearTables() {
 	if err := app.Manager.Flush(); err != nil {
 		log.Fatal(err)
 	}
-	ensureTablesExist()
 }
 
 func TestAddRating(t *testing.T) {
