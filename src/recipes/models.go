@@ -9,6 +9,7 @@ import (
 
 // The Recipe entity is used to marshall/unmarshall JSON.
 type Recipe struct {
+	ID         int     `json:"id"`
 	Name       string  `json:"name"`
 	PrepTime   float32 `json:"preptime"`
 	Difficulty int     `json:"difficulty"`
@@ -28,6 +29,7 @@ type n1qlRatings struct {
 
 // The RecipeRated entity is used to marshall/unmarshall JSON.
 type RecipeRated struct {
+	ID         int     `json:"id"`
 	Name       string  `json:"name"`
 	PrepTime   float32 `json:"preptime"`
 	Difficulty int     `json:"difficulty"`
@@ -79,7 +81,10 @@ func (r *Recipe) CreateRecipe(db *gocb.Bucket) error {
 		return err
 	}
 
-	id := strconv.Itoa(int(newID))
+	rID := int(newID)
+	r.ID = rID
+
+	id := strconv.Itoa(rID)
 
 	_, err = db.Insert(id, r, 0)
 	if err != nil {

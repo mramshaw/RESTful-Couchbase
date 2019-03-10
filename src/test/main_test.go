@@ -58,8 +58,8 @@ func TestGetNonExistentRecipe(t *testing.T) {
 
 	var m map[string]string
 	json.Unmarshal(response.Body.Bytes(), &m)
-	if m["error"] != "Recipe not found" {
-		t.Errorf("Expected the 'error' key of the response to be set to 'Recipe not found'. Got '%s'", m["error"])
+	if m["error"] != "key not found" {
+		t.Errorf("Expected the 'error' of the response to be set to 'key not found'. Got '%s'", m["error"])
 	}
 }
 
@@ -77,6 +77,12 @@ func TestCreateRecipe(t *testing.T) {
 
 	var m map[string]interface{}
 	json.Unmarshal(response.Body.Bytes(), &m)
+
+	// the id is compared to 1.0 because JSON unmarshaling converts numbers to
+	//     floats (float64), when the target is a map[string]interface{}
+	if m["id"] != 1.0 {
+		t.Errorf("Expected recipe ID to be '1'. Got '%v'", m["id"])
+	}
 
 	if m["name"] != "test recipe" {
 		t.Errorf("Expected recipe name to be 'test recipe'. Got '%v'", m["name"])
@@ -135,6 +141,9 @@ func TestUpdatePutRecipe(t *testing.T) {
 	var m map[string]interface{}
 	json.Unmarshal(response.Body.Bytes(), &m)
 
+	if m["id"] != originalRecipe["id"] {
+		t.Errorf("Expected the id to remain the same (%v). Got %v", originalRecipe["id"], m["id"])
+	}
 	if m["name"] == originalRecipe["name"] {
 		t.Errorf("Expected the name to change from '%[01]v' to '%[02]v'. Got '%[02]v'", originalRecipe["name"], m["name"])
 	}
@@ -175,6 +184,9 @@ func TestUpdatePatchRecipe(t *testing.T) {
 	var m map[string]interface{}
 	json.Unmarshal(response.Body.Bytes(), &m)
 
+	if m["id"] != originalRecipe["id"] {
+		t.Errorf("Expected the id to remain the same (%v). Got %v", originalRecipe["id"], m["id"])
+	}
 	if m["name"] == originalRecipe["name"] {
 		t.Errorf("Expected the name to change from '%[01]v' to '%[02]v'. Got '%[02]v'", originalRecipe["name"], m["name"])
 	}
@@ -213,6 +225,45 @@ func TestDeleteRecipe(t *testing.T) {
 	}
 	response = executeRequest(req)
 	checkResponseCode(t, http.StatusNotFound, response)
+}
+
+func TestDeleteDeletedRecipe(t *testing.T) {
+	clearTables()
+	addRecipes(1, 1)
+
+	req, err := http.NewRequest("GET", "/v1/recipes/1", nil)
+	if err != nil {
+		t.Errorf("Error on http.NewRequest (GET): %s", err)
+	}
+	response := executeRequest(req)
+	checkResponseCode(t, http.StatusOK, response)
+
+	req, err = http.NewRequest("DELETE", "/v1/recipes/1", nil)
+	if err != nil {
+		t.Errorf("Error on http.NewRequest (DELETE): %s", err)
+	}
+	response = executeRequest(req)
+	checkResponseCode(t, http.StatusOK, response)
+
+	req, err = http.NewRequest("GET", "/v1/recipes/1", nil)
+	if err != nil {
+		t.Errorf("Error on http.NewRequest (Second GET): %s", err)
+	}
+	response = executeRequest(req)
+	checkResponseCode(t, http.StatusNotFound, response)
+
+	req, err = http.NewRequest("DELETE", "/v1/recipes/1", nil)
+	if err != nil {
+		t.Errorf("Error on http.NewRequest (Second DELETE): %s", err)
+	}
+	response = executeRequest(req)
+	checkResponseCode(t, http.StatusNotFound, response)
+
+	var m map[string]string
+	json.Unmarshal(response.Body.Bytes(), &m)
+	if m["error"] != "key not found" {
+		t.Errorf("Expected the 'error' of the response to be set to 'key not found'. Got '%s'", m["error"])
+	}
 }
 
 func executeRequest(req *http.Request) *httptest.ResponseRecorder {
@@ -263,6 +314,37 @@ func TestAddRating(t *testing.T) {
 	}
 	response = executeRequest(req)
 	checkResponseCode(t, http.StatusCreated, response)
+}
+
+func TestGetRecipes(t *testing.T) {
+	clearTables()
+	addRecipes(1, 2)
+
+	// Sleep for 5 seconds to allow Couchbase time to commit
+	time.Sleep(5 * time.Second)
+
+	var bb bytes.Buffer
+	mw := multipart.NewWriter(&bb)
+	mw.WriteField("count", "20") // Should get reset to 10
+	mw.WriteField("start", "-1") // Should get reset to 0
+	mw.Close()
+
+	req, err := http.NewRequest("GET", "/v1/recipes", &bb)
+	if err != nil {
+		t.Errorf("Error on http.NewRequest (GET): %s", err)
+	}
+	req.Header.Set("Content-Type", mw.FormDataContentType())
+
+	response := executeRequest(req)
+	checkResponseCode(t, http.StatusOK, response)
+
+	var mm []map[string]interface{}
+	json.Unmarshal(response.Body.Bytes(), &mm)
+
+	// Search page limit
+	if len(mm) != 2 {
+		t.Errorf("Expected '2' recipes. Got '%v'", len(mm))
+	}
 }
 
 func TestSearch(t *testing.T) {
@@ -352,8 +434,8 @@ func TestSearch(t *testing.T) {
 	time.Sleep(5 * time.Second)
 
 	mw = multipart.NewWriter(&bb)
-	mw.WriteField("count", "10")
-	mw.WriteField("start", "1")
+	mw.WriteField("count", "20") // Should get reset to 10
+	mw.WriteField("start", "-1") // Should get reset to 0
 	mw.Close()
 
 	req, err = http.NewRequest("POST", "/v1/recipes/search", &bb)
@@ -363,7 +445,6 @@ func TestSearch(t *testing.T) {
 	req.Header.Set("Content-Type", mw.FormDataContentType())
 
 	response = executeRequest(req)
-
 	checkResponseCode(t, http.StatusOK, response)
 
 	json.Unmarshal(response.Body.Bytes(), &mm)
@@ -386,7 +467,6 @@ func TestSearch(t *testing.T) {
 	req.Header.Set("Content-Type", mw.FormDataContentType())
 
 	response = executeRequest(req)
-
 	checkResponseCode(t, http.StatusOK, response)
 
 	json.Unmarshal(response.Body.Bytes(), &mm)

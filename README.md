@@ -53,7 +53,7 @@ We will use parameterized N1QL to prevent SQL injection.
 ## Features
 
 - uses [Gorilla MUX](http://github.com/Gorilla/mux)
-- uses [Pure Go couchbase driver](http://blog.couchbase.com/go-sdk-1.0-ga/)
+- uses [Go couchbase driver](http://blog.couchbase.com/go-sdk-1.0-ga/)
 
 ## Couchbase
 
@@ -186,7 +186,7 @@ Here we can see that using the document id is slower:
 
 #### Specify "AdHoc(false)" to cache queries
 
-Specify that the server should cache the query plan in an internal cache as follows:
+Specify that the server should cache the query plan as follows:
 
 ```Go
 	listRecipesQuery := gocb.NewN1qlQuery("SELECT * FROM recipes LIMIT $1 OFFSET $2").AdHoc(false)
@@ -346,9 +346,8 @@ Clean up docker image as follows:
 
 Due to the ad-hoc nature of NoSQL documents, the code is somewhat more complicated
 than would be the case with relational databases; however as I am using Couchbase
-as a drop-in replacement for PostgreSQL this is hardly a fair comparison.
-
-But for learning the ins and outs of Couchbase, it's been a worthwhile exercise.
+as a drop-in replacement for PostgreSQL this is hardly a fair comparison. But for
+learning the ins and outs of Couchbase, it's been a worthwhile exercise.
 
 ## Versions
 
@@ -370,5 +369,6 @@ Query Optimization Using Prepared (Optimized) Statements:
 - [x] Learn [N1QL](http://docs.couchbase.com/server/6.0/getting-started/try-a-query.html)
 - [ ] Investigate using views to enforce constraints (indexes are a performance nightmare)
 - [x] Add Travis CI build process & code coverage reporting
+- [ ] Update PUT/PATCH processing to NOT zero ratings
 - [ ] Update build process to `vgo`
 - [ ] Add tests for data TTL

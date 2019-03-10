@@ -26,7 +26,7 @@ func (a *App) getRecipeEndpoint(w http.ResponseWriter, req *http.Request) {
 	r := recipes.Recipe{}
 	if err := r.GetRecipe(recipeID, a.DB); err != nil {
 		if gocb.IsKeyNotFoundError(err) {
-			respondWithError(w, http.StatusNotFound, "Recipe not found")
+			respondWithError(w, http.StatusNotFound, err.Error())
 		} else {
 			respondWithError(w, http.StatusInternalServerError, err.Error())
 		}
@@ -90,7 +90,11 @@ func (a *App) deleteRecipeEndpoint(w http.ResponseWriter, req *http.Request) {
 	recipeID := params["id"]
 	r := recipes.Recipe{}
 	if err := r.DeleteRecipe(recipeID, a.DB); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
+		if gocb.IsKeyNotFoundError(err) {
+			respondWithError(w, http.StatusNotFound, err.Error())
+		} else {
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+		}
 		return
 	}
 	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
