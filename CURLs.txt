@@ -8,7 +8,8 @@ GET:
 
 POST (Create):
 
-	curl -v -H "Content-Type: application/json" -d '{"name":"test recipe","preptime":1.11,"difficulty":1,"vegetarian":false}' localhost/v1/recipes
+	curl -v -H "Content-Type: application/json" -d '{"id":1,"name":"test recipe","preptime":1.11,"difficulty":1,"vegetarian":false}' localhost/v1/recipes
+	curl -v -H "Content-Type: application/json" -d '{"id":2,"name":"test recipe 2","preptime":1.22,"difficulty":2,"vegetarian":true}' localhost/v1/recipes
 
 PUT (Update):
 

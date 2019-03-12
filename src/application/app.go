@@ -79,7 +79,11 @@ func (a *App) modifyRecipeEndpoint(w http.ResponseWriter, req *http.Request) {
 	}
 	defer req.Body.Close()
 	if err := r.UpdateRecipe(recipeID, a.DB); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
+		if gocb.IsKeyNotFoundError(err) {
+			respondWithError(w, http.StatusNotFound, err.Error())
+		} else {
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+		}
 		return
 	}
 	respondWithJSON(w, http.StatusOK, r)
@@ -115,8 +119,12 @@ func (a *App) addRatingEndpoint(w http.ResponseWriter, req *http.Request) {
 	}
 	defer req.Body.Close()
 	if err := rr.AddRecipeRating(a.DB); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
+		if gocb.IsKeyNotFoundError(err) {
+			respondWithError(w, http.StatusNotFound, err.Error())
+		} else {
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 	}
 	respondWithJSON(w, http.StatusCreated, rr)
 }

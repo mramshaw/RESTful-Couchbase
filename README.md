@@ -77,6 +77,8 @@ returning JSON documents.
 Similiar to __redis__ and __Cassandra__, data may be assigned arbitrary
 expiry times.
 
+Couchbase offers both [optimistic and pessimistic locking](http://docs.couchbase.com/go-sdk/1.5/concurrent-mutations-cluster.html).
+
 Couchbase is packaged with an Admin Console GUI.
 
 #### Getting familiar with Couchbase
@@ -364,10 +366,15 @@ Query Optimization Using Prepared (Optimized) Statements:
 
     http://docs.couchbase.com/go-sdk/1.5/n1ql-query.html#prepare-stmts
 
+Concurrent Document Mutations
+
+    http://docs.couchbase.com/go-sdk/1.5/concurrent-mutations-cluster.html
+
 ## To Do
 
 - [x] Learn [N1QL](http://docs.couchbase.com/server/6.0/getting-started/try-a-query.html)
 - [ ] Investigate using views to enforce constraints (indexes are a performance nightmare)
 - [x] Add Travis CI build process & code coverage reporting
+- [x] Add pessimistic locking to updates
 - [ ] Update build process to `vgo`
 - [ ] Add tests for data TTL

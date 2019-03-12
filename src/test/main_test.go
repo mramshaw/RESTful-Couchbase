@@ -17,6 +17,10 @@ import (
 	"gopkg.in/couchbase/gocb.v1"
 )
 
+const (
+	sleepTime = 6 // 6 seconds
+)
+
 var app application.App
 
 func TestMain(m *testing.M) {
@@ -52,6 +56,61 @@ func TestGetNonExistentRecipe(t *testing.T) {
 	req, err := http.NewRequest("GET", "/v1/recipes/11", nil)
 	if err != nil {
 		t.Errorf("Error on http.NewRequest: %s", err)
+	}
+	response := executeRequest(req)
+	checkResponseCode(t, http.StatusNotFound, response)
+
+	var m map[string]string
+	json.Unmarshal(response.Body.Bytes(), &m)
+	if m["error"] != "key not found" {
+		t.Errorf("Expected the 'error' of the response to be set to 'key not found'. Got '%s'", m["error"])
+	}
+}
+
+func TestUpdatePutNonExistentRecipe(t *testing.T) {
+	clearTables()
+
+	payload := []byte(`{"name":"test recipe - put","preptime":11.11,"difficulty":3,"vegetarian":false}`)
+
+	req, err := http.NewRequest("PUT", "/v1/recipes/1", bytes.NewBuffer(payload))
+	if err != nil {
+		t.Errorf("Error on http.NewRequest (PUT): %s", err)
+	}
+	response := executeRequest(req)
+	checkResponseCode(t, http.StatusNotFound, response)
+
+	var m map[string]string
+	json.Unmarshal(response.Body.Bytes(), &m)
+	if m["error"] != "key not found" {
+		t.Errorf("Expected the 'error' of the response to be set to 'key not found'. Got '%s'", m["error"])
+	}
+}
+
+func TestUpdatePatchNonExistentRecipe(t *testing.T) {
+	clearTables()
+
+	payload := []byte(`{"name":"test recipe - patch","preptime":22.22,"difficulty":4,"vegetarian":false}`)
+
+	req, err := http.NewRequest("PATCH", "/v1/recipes/1", bytes.NewBuffer(payload))
+	if err != nil {
+		t.Errorf("Error on http.NewRequest (PATCH): %s", err)
+	}
+	response := executeRequest(req)
+	checkResponseCode(t, http.StatusNotFound, response)
+
+	var m map[string]string
+	json.Unmarshal(response.Body.Bytes(), &m)
+	if m["error"] != "key not found" {
+		t.Errorf("Expected the 'error' of the response to be set to 'key not found'. Got '%s'", m["error"])
+	}
+}
+
+func TestDeleteNonExistentRecipe(t *testing.T) {
+	clearTables()
+
+	req, err := http.NewRequest("DELETE", "/v1/recipes/1", nil)
+	if err != nil {
+		t.Errorf("Error on http.NewRequest (Second DELETE): %s", err)
 	}
 	response := executeRequest(req)
 	checkResponseCode(t, http.StatusNotFound, response)
@@ -315,12 +374,25 @@ func TestAddRating(t *testing.T) {
 	checkResponseCode(t, http.StatusCreated, response)
 }
 
+func TestAddRatingNonExistentRecipe(t *testing.T) {
+	clearTables()
+
+	payload := []byte(`{"rating":3}`)
+
+	req, err := http.NewRequest("POST", "/v1/recipes/1/rating", bytes.NewBuffer(payload))
+	if err != nil {
+		t.Errorf("Error on http.NewRequest (2nd POST): %s", err)
+	}
+	response := executeRequest(req)
+	checkResponseCode(t, http.StatusNotFound, response)
+}
+
 func TestGetRecipes(t *testing.T) {
 	clearTables()
 	addRecipes(1, 2)
 
-	// Sleep for 5 seconds to allow Couchbase time to commit
-	time.Sleep(5 * time.Second)
+	// Sleep the specified number of seconds to allow Couchbase time to commit
+	time.Sleep(sleepTime * time.Second)
 
 	var bb bytes.Buffer
 	mw := multipart.NewWriter(&bb)
@@ -376,8 +448,8 @@ func TestSearch(t *testing.T) {
 	response = executeRequest(req)
 	checkResponseCode(t, http.StatusCreated, response)
 
-	// Sleep for 5 seconds to allow Couchbase time to commit
-	time.Sleep(5 * time.Second)
+	// Sleep the specified number of seconds to allow Couchbase time to commit
+	time.Sleep(sleepTime * time.Second)
 
 	var bb bytes.Buffer
 	mw := multipart.NewWriter(&bb)
@@ -429,8 +501,8 @@ func TestSearch(t *testing.T) {
 
 	addRecipes(2, 12)
 
-	// Sleep for 5 seconds to allow Couchbase time to commit
-	time.Sleep(5 * time.Second)
+	// Sleep the specified number of seconds to allow Couchbase time to commit
+	time.Sleep(sleepTime * time.Second)
 
 	mw = multipart.NewWriter(&bb)
 	mw.WriteField("count", "20") // Should get reset to 10

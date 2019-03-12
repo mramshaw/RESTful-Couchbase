@@ -56,16 +56,21 @@ func (r *Recipe) GetRecipe(id string, db *gocb.Bucket) error {
 // The recipe ID and the recipe ratings will not be changed.
 func (r *Recipe) UpdateRecipe(id string, db *gocb.Bucket) error {
 
-	updateRecipeQuery := gocb.NewN1qlQuery("UPDATE recipes USE KEYS $1 SET name = $2, preptime = $3, difficulty = $4, vegetarian = $5").AdHoc(false)
+	var recipe Recipe
 
-	var params []interface{}
-	params = append(params, id)
-	params = append(params, r.Name)
-	params = append(params, r.PrepTime)
-	params = append(params, r.Difficulty)
-	params = append(params, r.Vegetarian)
+	// Get document, 3 second lock
+	cas, err := db.GetAndLock(id, 3, &recipe)
+	if err != nil {
+		return err
+	}
 
-	_, err := db.ExecuteN1qlQuery(updateRecipeQuery, params)
+	recipe.Name = r.Name
+	recipe.PrepTime = r.PrepTime
+	recipe.Difficulty = r.Difficulty
+	recipe.Vegetarian = r.Vegetarian
+
+	// Mutating unlocks the document
+	_, err = db.Replace(id, recipe, cas, 0)
 	if err != nil {
 		return err
 	}
@@ -178,30 +183,22 @@ func GetRecipesRated(db *gocb.Bucket, start int, count int, preptime float32) ([
 // and the ratings are never overwritten.
 func (rr *RecipeRating) AddRecipeRating(db *gocb.Bucket) error {
 
-	getRecipeQuery := gocb.NewN1qlQuery("SELECT ratings FROM recipes AS results USE KEYS $1").AdHoc(false)
-
 	id := strconv.Itoa(int(rr.RecipeID))
 
-	var params []interface{}
-	params = append(params, id)
+	var recipe Recipe
 
-	rs, err := db.ExecuteN1qlQuery(getRecipeQuery, params)
+	// Get document, 3 second lock
+	cas, err := db.GetAndLock(id, 3, &recipe)
 	if err != nil {
 		return err
 	}
-	defer rs.Close()
 
-	var row n1qlRatings
-	rs.One(&row)
-
-	ratings := row.Ratings
+	ratings := recipe.Ratings
 	ratings = append(ratings, rr.Rating)
+	recipe.Ratings = ratings
 
-	updateRecipeQuery := gocb.NewN1qlQuery("UPDATE recipes USE KEYS $1 SET ratings = $2").AdHoc(false)
-
-	params = append(params, ratings)
-
-	_, err = db.ExecuteN1qlQuery(updateRecipeQuery, params)
+	// Mutating unlocks the document
+	_, err = db.Replace(id, recipe, cas, 0)
 	if err != nil {
 		return err
 	}
