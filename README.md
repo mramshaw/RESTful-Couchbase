@@ -15,6 +15,8 @@ The contents are as follows:
 * [Rationale](#rationale)
 * [Features](#features)
 * [Couchbase](#couchbase)
+    * [Caveats](#caveats)
+    * [Transactions, Sagas and locking](#transactions-sagas-and-locking)
     * [Getting familiar with Couchbase](#getting-familiar-with-couchbase)
 * [Couchbase Performance Tips](#couchbase-performance-tips)
     * [Query by KEYS rather than by id](#query-by-keys-rather-than-by-id)
@@ -31,6 +33,7 @@ The contents are as follows:
     * [Results](#results)
 * [Versions](#versions)
 * [Reference](#reference)
+    * [Couchbase BLOG](#couchbase-blog)
 * [To Do](#to-do)
 
 ## Rationale
@@ -67,6 +70,9 @@ more akin to object storage than relational database rows or records.
 What would be referred to as a __database__ in a relational database seems
 to be referred to as a __bucket__ in Couchbase.
 
+Likewise, what would normally be referred to as a __server__ seems to be
+referred to as a __cluster__ in Couchbase.
+
 As with other NoSQL databases (such as DynamoDB), schemas are flexible.
 
 Unusually, features master-master replication (all nodes are identical).
@@ -77,9 +83,49 @@ returning JSON documents.
 Similiar to __redis__ and __Cassandra__, data may be assigned arbitrary
 expiry times.
 
+Unlike __Cassandra__, Couchbase has support for __joins__.
+
+Couchbase is packaged with an Admin Console GUI. Other NoSQL solutions
+(such as MongoDB and Apache Cassandra) apparently are not packaged with
+administrative consoles (although third-party consoles are available).
+
+#### Caveats
+
+Couchbase has a __memory-first__ architecture, which means that the results
+of write operations are acknowledged when stored in memory (they are then
+queued to be asynchronously written to disk and/or then replicated to another
+node). So if an operation is written to memory, and the system shuts down
+immediately afterwards, then that operation may not persist.
+
+This is the __default__ behaviour, and potentially violates the __D__ of
+ACID transactions. However, this behaviour can be over-ridden (at a small
+performance cost) if durability requirements are critical.
+
+Couchbase has a maximum capacity of 20 MB per document (probably not an
+issue, but worth bearing in mind).
+
+Document ids must be unique for the bucket in Couchbase (different document
+types must have unique document ids). Also, each Document id (key) must be
+a string in Couchbase (i.e. `"1"` instead of `1`). For this reason, it
+seems to be normal practice to use a compound id (such as `user::5`); a
+variation on this seems to be to embed a __type__ field within the document
+(such as `"type": "user"`).
+
+[The document id may be accessed via the document metadata: `META().id`.
+ If using N1QL this value may be returned, however it is unclear to me
+ how this value may be accessed from the Couchbase GOCB driver API.]
+
+#### Transactions, Sagas and locking
+
+Couchbase provides ACID transactions for single document operations, but multi-document transactions (or __sagas__) are not yet
+natively supported (alpha third-party solutions are available).
+
 Couchbase offers both [optimistic and pessimistic locking](http://docs.couchbase.com/go-sdk/1.5/concurrent-mutations-cluster.html).
 
-Couchbase is packaged with an Admin Console GUI.
+Locking in Couchbase is implemented by CAS (Compare And Swap). This is basically a hash or digest, and will indicate if the document
+in question has been mutated (if it __has__ and the CAS has been supplied, then the update will fail). Alternatively, there are
+__lock__ and __unlock__ primitives (as well as __get\_and\_lock__). The lock time may be specified. Mutating the document will
+also serve to unlock it.
 
 #### Getting familiar with Couchbase
 
@@ -366,14 +412,38 @@ Query Optimization Using Prepared (Optimized) Statements:
 
     http://docs.couchbase.com/go-sdk/1.5/n1ql-query.html#prepare-stmts
 
-Concurrent Document Mutations
+[My feeling is that using ___named___ parameters is more self-documenting (and may
+ therefore result in fewer bugs) than using ___positional___ parameters.]
+
+Concurrent Document Mutations:
 
     http://docs.couchbase.com/go-sdk/1.5/concurrent-mutations-cluster.html
+
+#### Couchbase BLOG
+
+For general articles on Couchbase, their [BLOG](https://blog.couchbase.com/) is the place to start.
+
+I found the following articles useful:
+
+    http://blog.couchbase.com/moving-from-sql-server-to-couchbase-part-1-data-modeling/
+
+[To a large extent, the use of JSON in Couchbase removes the need for OR/M tooling.]
+
+    http://blog.couchbase.com/sql-server-couchbase-data-migration/
+
+[The article states there is no __date__ primitive in JSON. While this may be technically
+ true, for most uses the __time__ primitive will suffice instead.]
+
+    http://blog.couchbase.com/moving-sql-server-couchbase-app-migration/
+
+[The article focuses on migrating from SQL Server but is useful for other databases.]
 
 ## To Do
 
 - [x] Learn [N1QL](http://docs.couchbase.com/server/6.0/getting-started/try-a-query.html)
 - [ ] Investigate using views to enforce constraints (indexes are a performance nightmare)
+- [ ] Upgrade to latest release of Gaolng (__1.12__ as of the time of writing)
+- [ ] Investigate the use of `n1qlResp.Metrics.MutationCount`
 - [x] Add Travis CI build process & code coverage reporting
 - [x] Add pessimistic locking to updates
 - [ ] Update build process to `vgo`
