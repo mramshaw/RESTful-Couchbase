@@ -7,9 +7,12 @@ import (
 	"gopkg.in/couchbase/gocb.v1"
 )
 
+const (
+	lockTime = 3 // seconds
+)
+
 // The Recipe entity is used to marshall/unmarshall JSON.
 type Recipe struct {
-	ID         int     `json:"id"`
 	Name       string  `json:"name"`
 	PrepTime   float32 `json:"preptime"`
 	Difficulty int     `json:"difficulty"`
@@ -17,19 +20,15 @@ type Recipe struct {
 	Ratings    []int   `json:"ratings"`
 }
 
-// The n1qlRecipe entity is used to retrieve query data from Couchbase.
-type n1qlRecipe struct {
+// The N1qlRecipe entity is used to retrieve query data from Couchbase.
+type N1qlRecipe struct {
+	ID     string `json:"id"`
 	Recipe Recipe `json:"recipe"`
-}
-
-// The n1qlRecipe entity is used to retrieve query data from Couchbase.
-type n1qlRatings struct {
-	Ratings []int `json:"ratings"`
 }
 
 // The RecipeRated entity is used to marshall/unmarshall JSON.
 type RecipeRated struct {
-	ID         int     `json:"id"`
+	ID         string  `json:"id"`
 	Name       string  `json:"name"`
 	PrepTime   float32 `json:"preptime"`
 	Difficulty int     `json:"difficulty"`
@@ -53,13 +52,13 @@ func (r *Recipe) GetRecipe(id string, db *gocb.Bucket) error {
 }
 
 // UpdateRecipe is used to modify a specific recipe.
-// The recipe ID and the recipe ratings will not be changed.
+// The recipe ratings will not be changed.
 func (r *Recipe) UpdateRecipe(id string, db *gocb.Bucket) error {
 
 	var recipe Recipe
 
-	// Get document, 3 second lock
-	cas, err := db.GetAndLock(id, 3, &recipe)
+	// Get document, lock for specified number of seconds
+	cas, err := db.GetAndLock(id, lockTime, &recipe)
 	if err != nil {
 		return err
 	}
@@ -99,7 +98,6 @@ func (r *Recipe) CreateRecipe(db *gocb.Bucket) error {
 	}
 
 	rID := int(newID)
-	r.ID = rID
 
 	id := strconv.Itoa(rID)
 
@@ -111,27 +109,28 @@ func (r *Recipe) CreateRecipe(db *gocb.Bucket) error {
 }
 
 // GetRecipes returns a collection of known recipes.
-func GetRecipes(db *gocb.Bucket, start int, count int) ([]Recipe, error) {
+func GetRecipes(db *gocb.Bucket, start int, count int) ([]N1qlRecipe, error) {
 
-	listRecipesQuery := gocb.NewN1qlQuery("SELECT * FROM recipes AS recipe LIMIT $1 OFFSET $2").AdHoc(false)
+	getRecipesN1ql := "SELECT META().id, * FROM recipes AS recipe LIMIT $1 OFFSET $2"
+	getRecipesQuery := gocb.NewN1qlQuery(getRecipesN1ql).AdHoc(false)
 
 	var params []interface{}
 	params = append(params, count)
 	params = append(params, start)
 
-	rows, err := db.ExecuteN1qlQuery(listRecipesQuery, params)
+	rows, err := db.ExecuteN1qlQuery(getRecipesQuery, params)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	recipes := []Recipe{}
+	recipes := []N1qlRecipe{}
 
-	var row n1qlRecipe
+	var row N1qlRecipe
 
 	for rows.Next(&row) {
-		recipes = append(recipes, row.Recipe)
-		row = n1qlRecipe{}
+		recipes = append(recipes, row)
+		row = N1qlRecipe{}
 	}
 	return recipes, nil
 }
@@ -139,7 +138,8 @@ func GetRecipes(db *gocb.Bucket, start int, count int) ([]Recipe, error) {
 // GetRecipesRated returns a collection of rated recipes.
 func GetRecipesRated(db *gocb.Bucket, start int, count int, preptime float32) ([]RecipeRated, error) {
 
-	listRecipesQuery := gocb.NewN1qlQuery("SELECT * FROM recipes AS recipe WHERE preptime < $3 LIMIT $1 OFFSET $2").AdHoc(false)
+	listRecipesN1ql := "SELECT META().id, * FROM recipes AS recipe WHERE preptime < $3 LIMIT $1 OFFSET $2"
+	listRecipesQuery := gocb.NewN1qlQuery(listRecipesN1ql).AdHoc(false)
 
 	var params []interface{}
 	params = append(params, count)
@@ -154,10 +154,11 @@ func GetRecipesRated(db *gocb.Bucket, start int, count int, preptime float32) ([
 
 	recipesRated := []RecipeRated{}
 
-	var row n1qlRecipe
+	var row N1qlRecipe
 
 	for rows.Next(&row) {
 		recipeRated := RecipeRated{}
+		recipeRated.ID = row.ID
 		recipeRated.Name = row.Recipe.Name
 		recipeRated.PrepTime = row.Recipe.PrepTime
 		recipeRated.Difficulty = row.Recipe.Difficulty
@@ -173,7 +174,7 @@ func GetRecipesRated(db *gocb.Bucket, start int, count int, preptime float32) ([
 		}
 		recipeRated.AvgRating = avgRating
 		recipesRated = append(recipesRated, recipeRated)
-		row = n1qlRecipe{}
+		row = N1qlRecipe{}
 	}
 	return recipesRated, nil
 }
@@ -187,8 +188,8 @@ func (rr *RecipeRating) AddRecipeRating(db *gocb.Bucket) error {
 
 	var recipe Recipe
 
-	// Get document, 3 second lock
-	cas, err := db.GetAndLock(id, 3, &recipe)
+	// Get document, lock for specified number of seconds
+	cas, err := db.GetAndLock(id, lockTime, &recipe)
 	if err != nil {
 		return err
 	}

@@ -442,7 +442,7 @@ I found the following articles useful:
 
 - [x] Learn [N1QL](http://docs.couchbase.com/server/6.0/getting-started/try-a-query.html)
 - [ ] Investigate using views to enforce constraints (indexes are a performance nightmare)
-- [ ] Upgrade to latest release of Gaolng (__1.12__ as of the time of writing)
+- [ ] Upgrade to latest release of Golang (__1.12__ as of the time of writing)
 - [ ] Investigate the use of `n1qlResp.Metrics.MutationCount`
 - [x] Add Travis CI build process & code coverage reporting
 - [x] Add pessimistic locking to updates

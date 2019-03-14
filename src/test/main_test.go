@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	sleepTime = 6 // 6 seconds
+	sleepTime = 6 // seconds
 )
 
 var app application.App
@@ -136,12 +136,6 @@ func TestCreateRecipe(t *testing.T) {
 
 	var m map[string]interface{}
 	json.Unmarshal(response.Body.Bytes(), &m)
-
-	// the id is compared to 1.0 because JSON unmarshaling converts numbers to
-	//     floats (float64), when the target is a map[string]interface{}
-	if m["id"] != 1.0 {
-		t.Errorf("Expected recipe ID to be '1'. Got '%v'", m["id"])
-	}
 
 	if m["name"] != "test recipe" {
 		t.Errorf("Expected recipe name to be 'test recipe'. Got '%v'", m["name"])
