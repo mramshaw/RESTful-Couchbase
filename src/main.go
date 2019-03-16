@@ -1,8 +1,12 @@
 package main
 
-import "os"
+import (
+	// native package
+	"os"
 
-import "application"
+	// local package
+	"application"
+)
 
 func main() {
 	app := application.App{}

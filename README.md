@@ -86,7 +86,7 @@ expiry times.
 Unlike __Cassandra__, Couchbase has support for __joins__.
 
 Couchbase is packaged with an Admin Console GUI. Other NoSQL solutions
-(such as MongoDB and Apache Cassandra) apparently are not packaged with
+(such as __MongoDB__ and __Cassandra__) apparently are not packaged with
 administrative consoles (although third-party consoles are available).
 
 #### Caveats
@@ -107,7 +107,7 @@ issue, but worth bearing in mind).
 Document ids must be unique for the bucket in Couchbase (different document
 types must have unique document ids). Also, each Document id (key) must be
 a string in Couchbase (i.e. `"1"` instead of `1`). For this reason, it
-seems to be normal practice to use a compound id (such as `user::5`); a
+seems to be normal practice to use a compound id (such as `"user::5"`); a
 variation on this seems to be to embed a __type__ field within the document
 (such as `"type": "user"`).
 
@@ -442,7 +442,7 @@ I found the following articles useful:
 
 - [x] Learn [N1QL](http://docs.couchbase.com/server/6.0/getting-started/try-a-query.html)
 - [ ] Investigate using views to enforce constraints (indexes are a performance nightmare)
-- [ ] Upgrade to latest release of Golang (__1.12__ as of the time of writing)
+- [x] Upgrade to latest release of Golang (__1.12__ as of the time of writing)
 - [ ] Investigate the use of `n1qlResp.Metrics.MutationCount`
 - [x] Add Travis CI build process & code coverage reporting
 - [x] Add pessimistic locking to updates

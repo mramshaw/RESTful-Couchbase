@@ -24,10 +24,10 @@ lint:		fmt
 		GOPATH=$(GOPATH) GOOS=$(GOOS) GOARCH=$(GOARCH) golint -set_exit_status ./...
 
 vet:		lint
-		GOPATH=$(GOPATH) GOOS=$(GOOS) GOARCH=$(GOARCH) go tool vet *.go
-		GOPATH=$(GOPATH) GOOS=$(GOOS) GOARCH=$(GOARCH) go tool vet application/*.go
-		GOPATH=$(GOPATH) GOOS=$(GOOS) GOARCH=$(GOARCH) go tool vet recipes/*.go
-		GOPATH=$(GOPATH) GOOS=$(GOOS) GOARCH=$(GOARCH) go tool vet test/*.go
+		GOPATH=$(GOPATH) GOOS=$(GOOS) GOARCH=$(GOARCH) go vet *.go
+		GOPATH=$(GOPATH) GOOS=$(GOOS) GOARCH=$(GOARCH) go vet application/*.go
+		GOPATH=$(GOPATH) GOOS=$(GOOS) GOARCH=$(GOARCH) go vet recipes/*.go
+		GOPATH=$(GOPATH) GOOS=$(GOOS) GOARCH=$(GOARCH) go vet test/*.go
 
 test:		vet
 		GOPATH=$(GOPATH) GOOS=$(GOOS) GOARCH=$(GOARCH) go test -coverpkg .,application,recipes -coverprofile=coverage.txt -covermode=atomic -v . ./...
