@@ -15,6 +15,8 @@ The contents are as follows:
 * [Rationale](#rationale)
 * [Features](#features)
 * [Couchbase](#couchbase)
+    * [Eventually Consistent](#eventually-consistent)
+    * [Views](#views)
     * [Caveats](#caveats)
     * [Transactions, Sagas and locking](#transactions-sagas-and-locking)
     * [Getting familiar with Couchbase](#getting-familiar-with-couchbase)
@@ -38,10 +40,10 @@ The contents are as follows:
 
 ## Rationale
 
-This builds on my [RESTful-Recipes](https://github.com/mramshaw/RESTful-Recipes) repo,
-which stores data in [PostgreSQL](https://www.postgresql.org/).
+This builds on my [RESTful-Recipes](http://github.com/mramshaw/RESTful-Recipes) repo,
+which stores data in [PostgreSQL](http://www.postgresql.org/).
 
-All dependencies are handled via [Docker](https://www.docker.com/products/docker) and __docker-compose__.
+All dependencies are handled via [Docker](http://www.docker.com/products/docker) and __docker-compose__.
 
 TDD (Test-Driven Development) is implemented; the build will fail if the tests do not pass.
 
@@ -88,6 +90,82 @@ Unlike __Cassandra__, Couchbase has support for __joins__.
 Couchbase is packaged with an Admin Console GUI. Other NoSQL solutions
 (such as __MongoDB__ and __Cassandra__) apparently are not packaged with
 administrative consoles (although third-party consoles are available).
+
+#### Eventually Consistent
+
+The Couchbase documentation seem to be somewhat inconsistent. For instance:
+
+> The basic storage and indexing sequence is:
+>
+> 1. A document is stored within the cluster. Initially the document is stored only in RAM.
+>
+> 2. The document is communicated to the indexer through replication to be indexed by views.
+>
+> This sequence means that the view results are eventually consistent with what is stored in
+> memory based on the latency in replication of the change to the indexer. It is possible to
+> write a document to the cluster and access the index without the newly written document
+> appearing in the generated view.
+>
+> Conversely, documents that have been stored with an expiry may continue to be included
+> within the view until the document has been removed from the database by the expiry pager.
+>
+> Couchbase Server supports the Observe command, which enables the current state of a document
+> and whether the document has been replicated to the indexer or whether it has been considered
+> for inclusion in an index.
+>
+> When accessing a view, the contents of the view are asynchronous to the stored documents.
+> In addition, the creation and updating of the view is subject to the `stale` parameter.
+> This controls how and when the view is updated when the view content is queried.
+
+    http://docs.couchbase.com/server/6.0/learn/views/views-store-data.html#document-storage-and-indexing-sequence
+
+[Note that the above makes no mention of the whether or not the document has been persisted to disk.]
+
+For more on the `stale` parameter:
+
+    http://docs.couchbase.com/server/6.0/learn/views/views-operation.html#index-stale
+
+Note the following:
+
+> * stale=false
+>
+> The index is updated before you execute the query, making sure that any documents updated and
+> persisted to disk are included in the view. The client will wait until the index has been
+> updated before the query has executed and, therefore, the response will be delayed until the
+> updated index is available.
+
+[This means that it is possible to request __only__ data that has been persisted to disk.]
+
+#### Views
+
+Couchbase __views__ are described as "eventually consistent".
+
+> Views are eventually consistent compared to the underlying stored documents.
+> Documents are included in views when the document data is persisted to disk.
+
+    http://docs.couchbase.com/server/6.0/learn/views/views-intro.html
+
+Contrast the above with the following:
+
+> Views are updated as the document data is updated in memory. There may be a delay between the
+> document being created or updated and the document being updated within the view depending
+> on the client-side query parameters.
+
+    http://docs.couchbase.com/server/6.0/learn/views/views-operation.html
+
+[Presumably this reflects how the `stale` parameter is set.]
+
+What this ___may___ mean in practice is that Couchbase views are not updated
+until the underlying documents they reference are persisted to disk - and ___not___
+when the document updates are acknowledged and stored in memory (see [Caveats](#caveats)
+below). [Presumably this is also when the indexes the views reference that track
+these documents are updated.]
+
+The exception to this is __DCP__ (Database Change Protocol) - which is available for stream-based views:
+
+> With DCP, data does not need to be persisted to disk before retrieving it with a view query.
+
+    http://docs.couchbase.com/server/6.0/learn/views/views-streaming.html
 
 #### Caveats
 
@@ -419,9 +497,13 @@ Concurrent Document Mutations:
 
     http://docs.couchbase.com/go-sdk/1.5/concurrent-mutations-cluster.html
 
+Views:
+
+    http://docs.couchbase.com/server/6.0/learn/views/views-intro.html
+
 #### Couchbase BLOG
 
-For general articles on Couchbase, their [BLOG](https://blog.couchbase.com/) is the place to start.
+For general articles on Couchbase, their [BLOG](http://blog.couchbase.com/) is the place to start.
 
 I found the following articles useful:
 
@@ -437,6 +519,10 @@ I found the following articles useful:
     http://blog.couchbase.com/moving-sql-server-couchbase-app-migration/
 
 [The article focuses on migrating from SQL Server but is useful for other databases.]
+
+    http://blog.couchbase.com/comparing-couchbase-views-couchbase-n1ql-indexing/
+
+[Compares and contrasts Couchbase Views with Couchbase N1QL & Indexing using GSI.]
 
 ## To Do
 
