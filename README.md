@@ -412,6 +412,7 @@ I found the following articles useful:
 ## To Do
 
 - [x] Learn [N1QL](http://docs.couchbase.com/server/6.0/getting-started/try-a-query.html)
+- [ ] Investigate the use of UUIDs as well as replication consensus procedures
 - [ ] Investigate using views to enforce constraints (indexes are a performance nightmare)
 - [x] Upgrade to latest release of Golang (__1.12__ as of the time of writing)
 - [ ] Investigate the use of `n1qlResp.Metrics.MutationCount`
