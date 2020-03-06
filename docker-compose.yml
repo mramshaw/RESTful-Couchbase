@@ -20,8 +20,8 @@ services:
             - ./src/test:/go/src/test
             - ./src:/go/src/RestfulCouchbase
         working_dir: /go/src/RestfulCouchbase
-        command: bash -c "sleep 15; make"
-        #command: bash -c "sleep 15; ./restful_couchbase
+        command: bash -c "sleep 20; make"
+        #command: bash -c "sleep 20; ./restful_couchbase
         links:
             - couchbase
         environment:

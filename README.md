@@ -291,7 +291,7 @@ The command to run:
 
     $ docker-compose up -d
 
-For the first run, there will be a warning if `mramshaw4docs/golang-couchbase:1.11` has not been built.
+For the first run, there will be a warning if `mramshaw4docs/golang-couchbase:1.14` has not been built.
 
 This image will contain all of the Go dependencies and should only need to be built once.
 
@@ -351,7 +351,7 @@ The command to run:
 
 Clean up docker image as follows:
 
-	$ docker rmi mramshaw4docs/golang-couchbase:1.11
+	$ docker rmi mramshaw4docs/golang-couchbase:1.14
 
 #### Results
 
@@ -363,9 +363,9 @@ learning the ins and outs of Couchbase, it's been a worthwhile exercise.
 ## Versions
 
 * Couchbase - Community Edition - version __6.0.0__
-* Docker - Community edition (Client & Server) - version __18.09.3__
-* Docker-Compose __1.23.1__
-* Go __1.11__
+* Docker __18.09.7__
+* Docker-Compose __1.25.4__
+* Go __1.14__
 
 More recent versions of these components should be fine.
 
