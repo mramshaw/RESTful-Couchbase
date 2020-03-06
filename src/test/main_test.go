@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	sleepTime = 6 // seconds
+	sleepTime = 7 // seconds
 )
 
 var app application.App
