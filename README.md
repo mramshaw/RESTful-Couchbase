@@ -3,7 +3,7 @@
 [![Build status](http://travis-ci.org/mramshaw/RESTful-Couchbase.svg?branch=master)](http://travis-ci.org/mramshaw/RESTful-Couchbase)
 [![Coverage Status](http://codecov.io/github/mramshaw/RESTful-Couchbase/coverage.svg?branch=master)](http://codecov.io/github/mramshaw/RESTful-Couchbase?branch=master)
 [![Go Report Card](http://goreportcard.com/badge/github.com/mramshaw/RESTful-Couchbase?style=flat-square)](http://goreportcard.com/report/github.com/mramshaw/RESTful-Couchbase)
-[![GitHub release](http://img.shields.io/github/release/mramshaw/RESTful-Couchbase.svg?style=flat-square)](http://github.com/mramshaw/RESTful-Couchbase/releases)
+[![GitHub release](http://img.shields.io/github/v/release/mramshaw/RESTful-Couchbase?style=flat-square)](http://github.com/mramshaw/RESTful-Couchbase/releases)
 
 An experiment with using [Couchbase](http://docs.couchbase.com/home/) as
 a drop-in replacement for PostgreSQL.
@@ -414,7 +414,8 @@ I found the following articles useful:
 - [x] Learn [N1QL](http://docs.couchbase.com/server/6.0/getting-started/try-a-query.html)
 - [ ] Investigate the use of UUIDs as well as replication consensus procedures
 - [ ] Investigate using views to enforce constraints (indexes are a performance nightmare)
-- [x] Upgrade to latest release of Golang (__1.12__ as of the time of writing)
+- [x] Upgrade to latest release of Golang (__1.14__ as of the time of writing)
+- [x] Upgrade `release` badge to conform to new Shields.io standards
 - [ ] Investigate the use of `n1qlResp.Metrics.MutationCount`
 - [x] Add Travis CI build process & code coverage reporting
 - [x] Add pessimistic locking to updates
