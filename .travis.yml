@@ -2,7 +2,8 @@ services:
   - docker
 
 script:
-  - docker-compose up
+  - docker-compose up -d couchbase
+  - docker-compose up golang
   - docker-compose down
 
 notifications:
