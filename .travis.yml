@@ -2,7 +2,7 @@ services:
   - docker
 
 script:
-  - docker-compose run golang bash -c "sleep 20; make test"
+  - docker-compose run --publish 80:8100 golang make test
 
 notifications:
   email:
