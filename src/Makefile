@@ -8,7 +8,7 @@ MAIN		:= restful_couchbase
 
 all:		$(MAIN)
 		@echo '$(MAIN)' has been compiled
-		./$(MAIN)
+		@echo type \'make serve\' to run
 
 $(MAIN):	build
 
@@ -35,6 +35,9 @@ test:		vet
 
 build:		test
 		GOPATH=$(GOPATH) GOOS=$(GOOS) GOARCH=$(GOARCH) go build -v -o $(MAIN) main.go
+
+serve:
+		./$(MAIN)
 
 run:
 		GOPATH=$(GOPATH) GOOS=$(GOOS) GOARCH=$(GOARCH) go run main.go
