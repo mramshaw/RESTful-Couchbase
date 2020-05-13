@@ -283,7 +283,7 @@ Once `make` indicates that `restful_couchbase` has been compiled, can change `do
 
 1) Comment `command: bash -c "sleep 15; make"`
 
-2) Uncomment `#command: bash -c "sleep 15; ./restful_couchbase`
+2) Uncomment `#command: bash -c "sleep 15; ./restful_couchbase"`
 
 #### To Run
 
