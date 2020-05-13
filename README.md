@@ -279,7 +279,7 @@ golang_1_6b5fa034bf5a | ./restful_couchbase
 golang_1_6b5fa034bf5a | 2019/03/08 19:45:44 Now serving recipes ...
 ```
 
-Once `make` indicates that `restful_couchbase` has been compiled, can change `docker-compose.yml` as follows:
+Once `make` indicates that `restful_couchbase` has been compiled, can change [docker-compose.yml](docker-compose.yml) as follows:
 
 1) Comment `command: bash -c "sleep 15; make"`
 
