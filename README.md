@@ -43,7 +43,7 @@ The contents are as follows:
 This builds on my [RESTful-Recipes](http://github.com/mramshaw/RESTful-Recipes) repo,
 which stores data in [PostgreSQL](http://www.postgresql.org/).
 
-All dependencies are handled via [Docker](http://www.docker.com/products/docker) and __docker-compose__.
+All dependencies are handled via [Docker](http://www.docker.com/products/docker) and [docker-compose](https://github.com/docker/compose).
 
 TDD (Test-Driven Development) is implemented; the build will fail if the tests do not pass.
 
@@ -276,7 +276,7 @@ golang_1_6b5fa034bf5a | ok  	test	9.691s
 golang_1_6b5fa034bf5a | GOPATH=/go GOOS=linux GOARCH=amd64 go build -v -o restful_couchbase main.go
 golang_1_6b5fa034bf5a | restful_couchbase has been compiled
 golang_1_6b5fa034bf5a | ./restful_couchbase
-golang_1_6b5fa034bf5a | 2019/03/08 19:45:44 Now serving recipes ...
+golang_1_6b5fa034bf5a | type 'make serve' to run
 ```
 
 Once `make` indicates that `restful_couchbase` has been compiled, can change [docker-compose.yml](docker-compose.yml) as follows:
@@ -291,7 +291,7 @@ The command to run:
 
     $ docker-compose up -d
 
-For the first run, there will be a warning if `mramshaw4docs/golang-couchbase:1.14` has not been built.
+For the first run, there will be a warning if `mramshaw4docs/golang-couchbase:1.15.4` has not been built.
 
 This image will contain all of the Go dependencies and should only need to be built once.
 
@@ -351,7 +351,7 @@ The command to run:
 
 Clean up docker image as follows:
 
-	$ docker rmi mramshaw4docs/golang-couchbase:1.14
+	$ docker rmi mramshaw4docs/golang-couchbase:1.15.4
 
 #### Results
 
@@ -365,7 +365,7 @@ learning the ins and outs of Couchbase, it's been a worthwhile exercise.
 * Couchbase - Community Edition - version __6.0.0__
 * Docker __18.09.7__
 * Docker-Compose __1.25.4__
-* Go __1.14__
+* Go __1.15.4__
 
 More recent versions of these components should be fine.
 
@@ -414,7 +414,7 @@ I found the following articles useful:
 - [x] Learn [N1QL](http://docs.couchbase.com/server/6.0/getting-started/try-a-query.html)
 - [ ] Investigate the use of UUIDs as well as replication consensus procedures
 - [ ] Investigate using views to enforce constraints (indexes are a performance nightmare)
-- [x] Upgrade to latest release of Golang (__1.14__ as of the time of writing)
+- [x] Upgrade to latest release of Golang (__1.15.4__ as of the time of writing)
 - [x] Upgrade `release` badge to conform to new Shields.io standards
 - [ ] Investigate the use of `n1qlResp.Metrics.MutationCount`
 - [x] Add Travis CI build process & code coverage reporting

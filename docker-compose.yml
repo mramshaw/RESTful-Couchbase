@@ -7,7 +7,7 @@ services:
 
     golang:
         build: .
-        image: mramshaw4docs/golang-couchbase:1.14
+        image: mramshaw4docs/golang-couchbase:1.15.4
         networks:
           couchnet:
         depends_on:
