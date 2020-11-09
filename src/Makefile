@@ -43,4 +43,4 @@ run:
 		GOPATH=$(GOPATH) GOOS=$(GOOS) GOARCH=$(GOARCH) go run main.go
 
 clean:
-		rm -f ./$(MAIN) coverage.html coverage.txt
+		rm -f ./$(MAIN) ./coverage.html ./coverage.txt

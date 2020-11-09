@@ -415,6 +415,7 @@ I found the following articles useful:
 - [ ] Investigate the use of UUIDs as well as replication consensus procedures
 - [ ] Investigate using views to enforce constraints (indexes are a performance nightmare)
 - [x] Upgrade to latest release of Golang (__1.15.4__ as of the time of writing)
+- [x] Upgrade to latest release of Couchbase (__6.6.0__ as of the time of writing)
 - [x] Upgrade `release` badge to conform to new Shields.io standards
 - [ ] Investigate the use of `n1qlResp.Metrics.MutationCount`
 - [x] Add Travis CI build process & code coverage reporting
